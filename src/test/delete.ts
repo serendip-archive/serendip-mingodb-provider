@@ -5,7 +5,7 @@ import {
     DbProviderInterface
 } from "serendip-business-model";
 import * as fs from "fs-extra";
-import * as dotenv from "dotenv"; import { MingodbProvider } from "../MingodbProvider";
+ import { MingodbProvider } from "../MingodbProvider";
 
 
 describe("delete scenarios", () => {

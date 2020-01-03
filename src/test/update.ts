@@ -4,8 +4,7 @@ import {
   DbCollectionInterface,
   DbProviderInterface
 } from "serendip-business-model";
-import * as fs from "fs-extra";
-import * as dotenv from "dotenv";
+
 import { MingodbProvider } from "../MingodbProvider";
 
 describe("update scenarios", () => {
@@ -47,20 +46,17 @@ describe("update scenarios", () => {
 
       done();
     })()
-      .then(() => { })
+      .then(() => {})
       .catch(done);
   });
 
-
   it("should upsert", done => {
     (async () => {
-
-
       await collection.updateOne({ upserted: true });
 
       done();
     })()
-      .then(() => { })
+      .then(() => {})
       .catch(done);
   });
 
@@ -84,14 +80,12 @@ describe("update scenarios", () => {
 
       assert.equal(model.hello, false);
     })()
-      .then(() => { })
+      .then(() => {})
       .catch(done);
   });
 
-
   it("should do more upserts", done => {
     (async () => {
-
       await collection.updateOne({ upserted1: true });
       await collection.updateOne({ upserted2: true });
       await collection.updateOne({ upserted3: true });
@@ -99,7 +93,7 @@ describe("update scenarios", () => {
 
       done();
     })()
-      .then(() => { })
+      .then(() => {})
       .catch(done);
   });
 });

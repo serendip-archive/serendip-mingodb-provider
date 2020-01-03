@@ -5,11 +5,10 @@ import {
   DbProviderInterface
 } from "serendip-business-model";
 import * as fs from "fs-extra";
-import * as dotenv from "dotenv";
+
 import { MingodbProvider } from "../MingodbProvider";
 
 
-dotenv.config();
 describe("init scenarios", () => {
   let provider: DbProviderInterface;
   let collection: DbCollectionInterface<any>;
