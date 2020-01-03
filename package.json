@@ -11,6 +11,7 @@
     "fast-json-patch": "^2.1.0",
     "mingo": "^2.4.0",
     "minimongo": "^6.3.7",
+    "mocha": "^6.2.2",
     "serendip-business-model": "^1.1.13"
   },
   "devDependencies": {},
