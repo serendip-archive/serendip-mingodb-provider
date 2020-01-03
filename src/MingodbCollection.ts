@@ -23,8 +23,8 @@ export class MingodbCollection<T> implements DbCollectionInterface<T> {
 
   public async ensureIndex(fieldOrSpec: any, options: any) {}
 
-  public aggregate(pipeline: any[], options: CollectionAggregationOptions) {
-    return [] as any;
+  public async aggregate(pipeline: any[], options: any) {
+    return mingo.aggregate(await this.find({}), pipeline);
   }
   public find(query?, skip?: any, limit?: any): Promise<T[]> {
     if (skip) skip = parseInt(skip);

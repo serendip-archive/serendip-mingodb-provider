@@ -1,6 +1,7 @@
 {
   "name": "serendip-mingodb-provider",
-  "version": "1.0.0",
+  
+  "version": "1.0.1",
   "description": "",
   "main": "index.js",
   "directories": {
@@ -30,7 +31,7 @@
     "type": "git",
     "url": "git+https://github.com/serendip-agency/serendip-mingodb-provider.git"
   },
-  "author": "",
+  "author": "Mohsen Esmaeili <m-esm@hotmail.com>",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/serendip-agency/serendip-mingodb-provider/issues"

@@ -54,7 +54,17 @@ var MingodbCollection = /** @class */ (function () {
         }); });
     };
     MingodbCollection.prototype.aggregate = function (pipeline, options) {
-        return [];
+        return __awaiter(this, void 0, void 0, function () {
+            var _a, _b;
+            return __generator(this, function (_c) {
+                switch (_c.label) {
+                    case 0:
+                        _b = (_a = mingo).aggregate;
+                        return [4 /*yield*/, this.find({})];
+                    case 1: return [2 /*return*/, _b.apply(_a, [_c.sent(), pipeline])];
+                }
+            });
+        });
     };
     MingodbCollection.prototype.find = function (query, skip, limit) {
         var _this = this;
