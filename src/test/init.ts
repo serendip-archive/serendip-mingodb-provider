@@ -17,14 +17,8 @@ describe("init scenarios", () => {
     (async () => {
       const provider = new MingodbProvider();
 
-       
-      await provider.initiate( {
-        MingoDb: process.env["db.MingoDb"],
-        mongoUrl: process.env["db.mongoUrl"],
-        authSource: process.env["db.authSource"],
-        user: process.env["db.user"],
-        password: process.env["db.password"]
-      });
+
+      await provider.initiate();
 
 
     })()
@@ -35,17 +29,13 @@ describe("init scenarios", () => {
   it("should get stats", done => {
     (async () => {
       const provider = new MingodbProvider();
-            
-      await provider.initiate( {
-        MingoDb: process.env["db.MingoDb"],
-        mongoUrl: process.env["db.mongoUrl"],
-        authSource: process.env["db.authSource"],
-        user: process.env["db.user"],
-        password: process.env["db.password"]
-      });
+
+      await provider.initiate();
 
 
-      console.log('\t db stats: ', await provider.stats());
+      console.info(JSON.stringify(await provider.stats(), null, 2)
+        .replace('{', '\t{')
+        .replace(/\n/g, '\n\t'));
 
 
     })()

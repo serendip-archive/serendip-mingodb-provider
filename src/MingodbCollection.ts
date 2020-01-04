@@ -10,6 +10,8 @@ import { MinimongoCollection } from "minimongo";
 import ObjectID from "bson-objectid";
 import * as Mingo from "mingo";
 import MingoTypes from "mingo";
+import * as path from 'path'
+import * as fs from 'fs-extra'
 
 const mingo: typeof MingoTypes = Mingo as any;
 
@@ -19,9 +21,9 @@ export class MingodbCollection<T> implements DbCollectionInterface<T> {
     private track: boolean,
     private provider: MingodbProvider,
     private collectionName: string
-  ) {}
+  ) { }
 
-  public async ensureIndex(fieldOrSpec: any, options: any) {}
+  public async ensureIndex(fieldOrSpec: any, options: any) { }
 
   public async aggregate(pipeline: any[], options: any) {
     return mingo.aggregate(await this.find({}), pipeline);
@@ -69,7 +71,7 @@ export class MingodbCollection<T> implements DbCollectionInterface<T> {
 
       this.collection.upsert(
         model,
-        result => {
+        async result => {
           if (this.track) {
             const trackRecord = {
               date: Date.now(),
@@ -94,6 +96,15 @@ export class MingodbCollection<T> implements DbCollectionInterface<T> {
             isFromInsertOne ? "insert" : "update",
             result
           );
+
+          const documentPath = path.join(this.provider.dbPath,
+            this.collectionName,
+            (result as any)._id + '.json');
+          await fs.writeJSON(documentPath, result, {
+            replacer: null,
+            spaces: 2,
+
+          })
 
           resolve(result);
         },
@@ -133,6 +144,11 @@ export class MingodbCollection<T> implements DbCollectionInterface<T> {
 
           this.provider.events[this.collectionName].emit("delete", model);
 
+          const documentPath = path.join(this.provider.dbPath,
+            this.collectionName,
+            _id + '.json');
+
+          await fs.unlink(documentPath)
           resolve(model);
         },
         err => {

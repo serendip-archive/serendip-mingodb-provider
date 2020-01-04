@@ -47,13 +47,7 @@ describe("init scenarios", function () {
                 switch (_a.label) {
                     case 0:
                         provider = new MingodbProvider_1.MingodbProvider();
-                        return [4 /*yield*/, provider.initiate({
-                                MingoDb: process.env["db.MingoDb"],
-                                mongoUrl: process.env["db.mongoUrl"],
-                                authSource: process.env["db.authSource"],
-                                user: process.env["db.user"],
-                                password: process.env["db.password"]
-                            })];
+                        return [4 /*yield*/, provider.initiate()];
                     case 1:
                         _a.sent();
                         return [2 /*return*/];
@@ -64,25 +58,21 @@ describe("init scenarios", function () {
     });
     it("should get stats", function (done) {
         (function () { return __awaiter(void 0, void 0, void 0, function () {
-            var provider, _a, _b, _c;
-            return __generator(this, function (_d) {
-                switch (_d.label) {
+            var provider, _a, _b, _c, _d;
+            return __generator(this, function (_e) {
+                switch (_e.label) {
                     case 0:
                         provider = new MingodbProvider_1.MingodbProvider();
-                        return [4 /*yield*/, provider.initiate({
-                                MingoDb: process.env["db.MingoDb"],
-                                mongoUrl: process.env["db.mongoUrl"],
-                                authSource: process.env["db.authSource"],
-                                user: process.env["db.user"],
-                                password: process.env["db.password"]
-                            })];
+                        return [4 /*yield*/, provider.initiate()];
                     case 1:
-                        _d.sent();
-                        _b = (_a = console).log;
-                        _c = ['\t db stats: '];
+                        _e.sent();
+                        _b = (_a = console).info;
+                        _d = (_c = JSON).stringify;
                         return [4 /*yield*/, provider.stats()];
                     case 2:
-                        _b.apply(_a, _c.concat([_d.sent()]));
+                        _b.apply(_a, [_d.apply(_c, [_e.sent(), null, 2])
+                                .replace('{', '\t{')
+                                .replace(/\n/g, '\n\t')]);
                         return [2 /*return*/];
                 }
             });

@@ -49,13 +49,7 @@ describe("delete scenarios", function () {
                     case 0:
                         // runs before each test in this block
                         provider = new MingodbProvider_1.MingodbProvider();
-                        return [4 /*yield*/, provider.initiate({
-                                MingoDb: process.env["db.MingoDb"],
-                                mongoUrl: process.env["db.mongoUrl"],
-                                authSource: process.env["db.authSource"],
-                                user: process.env["db.user"],
-                                password: process.env["db.password"]
-                            })];
+                        return [4 /*yield*/, provider.initiate()];
                     case 1:
                         _a.sent();
                         _a.label = 2;

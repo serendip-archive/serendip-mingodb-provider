@@ -15,13 +15,7 @@ describe("update scenarios", () => {
       // runs before each test in this block
 
       provider = new MingodbProvider();
-      await provider.initiate({
-        MingoDb: process.env["db.MingoDb"],
-        mongoUrl: process.env["db.mongoUrl"],
-        authSource: process.env["db.authSource"],
-        user: process.env["db.user"],
-        password: process.env["db.password"]
-      });
+      await provider.initiate();
       try {
         await provider.dropCollection("test");
       } catch (error) {}

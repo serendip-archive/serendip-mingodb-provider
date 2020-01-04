@@ -10,24 +10,12 @@ import { MingodbProvider } from "../MingodbProvider";
 
 describe("gridfs scenarios", () => {
   let provider: DbProviderInterface;
-  let collection: DbCollectionInterface<any>;
   beforeEach(done => {
     (async () => {
       // runs before each test in this block
 
       provider = new MingodbProvider();
-      await provider.initiate({
-        MingoDb: process.env["db.MingoDb"],
-        mongoUrl: process.env["db.mongoUrl"],
-        authSource: process.env["db.authSource"],
-        user: process.env["db.user"],
-        password: process.env["db.password"]
-      });
-      try {
-        await provider.dropCollection("fs.files");
-        await provider.dropCollection("fs.chunks");
-      } catch (error) {}
-      collection = await provider.collection("fs.files");
+      await provider.initiate();
 
       done();
     })();

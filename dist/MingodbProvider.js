@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -36,10 +47,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 exports.__esModule = true;
-var MingodbCollection_1 = require("./MingodbCollection");
 var events_1 = require("events");
 var fs = require("fs-extra");
 var minimongo_1 = require("minimongo");
+var path = require("path");
+var MingodbCollection_1 = require("./MingodbCollection");
+var glob = require("fast-glob");
 var MingodbProvider = /** @class */ (function () {
     function MingodbProvider() {
         // you can listen for  any "update","delete","insert" event. each event emitter is accessible trough property named same as collectionName
@@ -47,17 +60,35 @@ var MingodbProvider = /** @class */ (function () {
         this._collections = {};
     }
     MingodbProvider.prototype.dropDatabase = function () {
-        return __awaiter(this, void 0, void 0, function () { return __generator(this, function (_a) {
-            return [2 /*return*/];
-        }); });
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, fs.unlink(this.dbPath)];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, this.initiate(this.options)];
+                    case 2:
+                        _a.sent();
+                        return [2 /*return*/];
+                }
+            });
+        });
     };
     MingodbProvider.prototype.dropCollection = function (name) {
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, reject) {
-                        _this.db.removeCollection(name, function () { return resolve(true); }, function (err) { return reject(err); });
-                    })];
+                return [2 /*return*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, fs.emptyDir(path.join(this.dbPath, name))];
+                                case 1:
+                                    _a.sent();
+                                    this.db.removeCollection(name, function () { return resolve(true); }, function (err) { return reject(err); });
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); })];
             });
         });
     };
@@ -68,11 +99,42 @@ var MingodbProvider = /** @class */ (function () {
             });
         });
     };
+    MingodbProvider.prototype.deletePath = function (_path) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!_path.startsWith('/')) {
+                            _path = path.join(this.fsPath, _path);
+                        }
+                        return [4 /*yield*/, fs.stat(_path)];
+                    case 1:
+                        if (!(_a.sent()).isFile()) return [3 /*break*/, 3];
+                        return [4 /*yield*/, fs.remove(_path)];
+                    case 2:
+                        _a.sent();
+                        return [3 /*break*/, 6];
+                    case 3: return [4 /*yield*/, fs.emptyDir(_path)];
+                    case 4:
+                        _a.sent();
+                        return [4 /*yield*/, fs.rmdir(_path)];
+                    case 5:
+                        _a.sent();
+                        _a.label = 6;
+                    case 6: return [2 /*return*/];
+                }
+            });
+        });
+    };
     MingodbProvider.prototype.openUploadStreamByFilePath = function (filePath, metadata) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, fs.remove(filePath)];
+                    case 0:
+                        if (!filePath.startsWith('/')) {
+                            filePath = path.join(this.fsPath, filePath);
+                        }
+                        return [4 /*yield*/, fs.remove(filePath)];
                     case 1:
                         _a.sent();
                         return [2 /*return*/, fs.createWriteStream(filePath, {})];
@@ -83,43 +145,98 @@ var MingodbProvider = /** @class */ (function () {
     MingodbProvider.prototype.openDownloadStreamByFilePath = function (filePath, opts) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
+                if (!filePath.startsWith('/')) {
+                    filePath = path.join(this.fsPath, filePath);
+                }
                 return [2 /*return*/, fs.createReadStream(filePath, {})];
             });
         });
     };
     MingodbProvider.prototype.stats = function () {
         return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, {
-                        db: null,
-                        collections: null,
-                        indexes: null,
-                        avgObjSizeByte: null,
-                        objects: null,
-                        fsUsedMB: null,
-                        fsTotalMB: null,
-                        storageMB: null
-                    }];
+            var _a;
+            return __generator(this, function (_b) {
+                switch (_b.label) {
+                    case 0:
+                        _a = {
+                            db: 'mingodb'
+                        };
+                        return [4 /*yield*/, this.collections()];
+                    case 1:
+                        _a.collections = (_b.sent()).length,
+                            _a.indexes = null,
+                            _a.avgObjSizeByte = null;
+                        return [4 /*yield*/, glob(path.join(this.dbPath, './**/*.json'))];
+                    case 2: return [2 /*return*/, (_a.objects = (_b.sent()).length,
+                            _a.fsUsedMB = null,
+                            _a.fsTotalMB = null,
+                            _a.storageMB = null,
+                            _a)];
+                }
             });
         });
     };
     MingodbProvider.prototype.collection = function (collectionName, track) {
         return __awaiter(this, void 0, void 0, function () {
+            var collectionPath, collectionPath_1, jsonFiles, _loop_1, _i, jsonFiles_1, jsonFile;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         collectionName = collectionName.trim();
-                        return [4 /*yield*/, this.collections()];
+                        collectionPath = path.join(this.dbPath, collectionName);
+                        return [4 /*yield*/, fs.ensureDir(collectionPath)];
                     case 1:
-                        if (!((_a.sent()).indexOf(collectionName) === -1)) return [3 /*break*/, 3];
+                        _a.sent();
+                        return [4 /*yield*/, this.collections()];
+                    case 2:
+                        if (!((_a.sent()).indexOf(collectionName) === -1)) return [3 /*break*/, 8];
                         return [4 /*yield*/, new Promise(function (resolve, reject) {
                                 _this.db.addCollection(collectionName, function () { return resolve(); }, function (err) { return reject(err); });
                             })];
-                    case 2:
-                        _a.sent();
-                        _a.label = 3;
                     case 3:
+                        _a.sent();
+                        collectionPath_1 = path.join(this.dbPath, collectionName);
+                        return [4 /*yield*/, fs.readdir(collectionPath_1)];
+                    case 4:
+                        jsonFiles = _a.sent();
+                        _loop_1 = function (jsonFile) {
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, new Promise(function (resolve, reject) { return __awaiter(_this, void 0, void 0, function () {
+                                            var _a, _b;
+                                            return __generator(this, function (_c) {
+                                                switch (_c.label) {
+                                                    case 0:
+                                                        _b = (_a = this.db.collections[collectionName]).upsert;
+                                                        return [4 /*yield*/, fs.readJson(path.join(collectionPath_1, jsonFile))];
+                                                    case 1:
+                                                        _b.apply(_a, [_c.sent(),
+                                                            function () { return resolve(); },
+                                                            function (err) { return reject(err); }]);
+                                                        return [2 /*return*/];
+                                                }
+                                            });
+                                        }); })];
+                                    case 1:
+                                        _a.sent();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        };
+                        _i = 0, jsonFiles_1 = jsonFiles;
+                        _a.label = 5;
+                    case 5:
+                        if (!(_i < jsonFiles_1.length)) return [3 /*break*/, 8];
+                        jsonFile = jsonFiles_1[_i];
+                        return [5 /*yield**/, _loop_1(jsonFile)];
+                    case 6:
+                        _a.sent();
+                        _a.label = 7;
+                    case 7:
+                        _i++;
+                        return [3 /*break*/, 5];
+                    case 8:
                         if (!this.events[collectionName])
                             this.events[collectionName] = new events_1.EventEmitter();
                         if (!this._collections[collectionName])
@@ -129,23 +246,40 @@ var MingodbProvider = /** @class */ (function () {
             });
         });
     };
-    MingodbProvider.prototype.initiate = function (options) {
+    MingodbProvider.prototype.initiate = function (_options) {
         return __awaiter(this, void 0, void 0, function () {
-            var _a, error_1;
+            var defaultOptions, _a, error_1;
             return __generator(this, function (_b) {
                 switch (_b.label) {
                     case 0:
-                        _b.trys.push([0, 2, , 3]);
+                        defaultOptions = {
+                            mingoPath: "./mingo"
+                        };
+                        this.options = __assign(__assign({}, defaultOptions), _options);
+                        _b.label = 1;
+                    case 1:
+                        _b.trys.push([1, 6, , 7]);
                         this.db = new minimongo_1.MemoryDb();
+                        return [4 /*yield*/, fs.ensureDir(this.options.mingoPath)];
+                    case 2:
+                        _b.sent();
+                        this.dbPath = path.join(this.options.mingoPath, "db");
+                        this.fsPath = path.join(this.options.mingoPath, "fs");
+                        return [4 /*yield*/, fs.ensureDir(this.dbPath)];
+                    case 3:
+                        _b.sent();
+                        return [4 /*yield*/, fs.ensureDir(this.fsPath)];
+                    case 4:
+                        _b.sent();
                         _a = this;
                         return [4 /*yield*/, this.collection("EntityChanges", false)];
-                    case 1:
+                    case 5:
                         _a.changes = _b.sent();
-                        return [3 /*break*/, 3];
-                    case 2:
+                        return [3 /*break*/, 7];
+                    case 6:
                         error_1 = _b.sent();
                         throw new Error("\n\nUnable to initiate to MiniMongo. Error details: \n" + error_1.message);
-                    case 3: return [2 /*return*/];
+                    case 7: return [2 /*return*/];
                 }
             });
         });

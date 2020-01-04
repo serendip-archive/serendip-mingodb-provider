@@ -41,40 +41,16 @@ var fs = require("fs-extra");
 var MingodbProvider_1 = require("../MingodbProvider");
 describe("gridfs scenarios", function () {
     var provider;
-    var collection;
     beforeEach(function (done) {
         (function () { return __awaiter(void 0, void 0, void 0, function () {
-            var error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         // runs before each test in this block
                         provider = new MingodbProvider_1.MingodbProvider();
-                        return [4 /*yield*/, provider.initiate({
-                                MingoDb: process.env["db.MingoDb"],
-                                mongoUrl: process.env["db.mongoUrl"],
-                                authSource: process.env["db.authSource"],
-                                user: process.env["db.user"],
-                                password: process.env["db.password"]
-                            })];
+                        return [4 /*yield*/, provider.initiate()];
                     case 1:
                         _a.sent();
-                        _a.label = 2;
-                    case 2:
-                        _a.trys.push([2, 5, , 6]);
-                        return [4 /*yield*/, provider.dropCollection("fs.files")];
-                    case 3:
-                        _a.sent();
-                        return [4 /*yield*/, provider.dropCollection("fs.chunks")];
-                    case 4:
-                        _a.sent();
-                        return [3 /*break*/, 6];
-                    case 5:
-                        error_1 = _a.sent();
-                        return [3 /*break*/, 6];
-                    case 6: return [4 /*yield*/, provider.collection("fs.files")];
-                    case 7:
-                        collection = _a.sent();
                         done();
                         return [2 /*return*/];
                 }

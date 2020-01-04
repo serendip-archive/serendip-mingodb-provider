@@ -40,6 +40,8 @@ var serendip_business_model_1 = require("serendip-business-model");
 var fast_json_patch_1 = require("fast-json-patch");
 var bson_objectid_1 = require("bson-objectid");
 var Mingo = require("mingo");
+var path = require("path");
+var fs = require("fs-extra");
 var mingo = Mingo;
 var MingodbCollection = /** @class */ (function () {
     function MingodbCollection(collection, track, provider, collectionName) {
@@ -98,28 +100,42 @@ var MingodbCollection = /** @class */ (function () {
         return new Promise(function (resolve, reject) {
             model["_id"] = new bson_objectid_1["default"](model["_id"]);
             model["_vdate"] = Date.now();
-            _this.collection.upsert(model, function (result) {
-                if (_this.track) {
-                    var trackRecord = {
-                        date: Date.now(),
-                        model: null,
-                        diff: null,
-                        type: isFromInsertOne
-                            ? serendip_business_model_1.EntityChangeType.Create
-                            : serendip_business_model_1.EntityChangeType.Update,
-                        userId: userId,
-                        collection: _this.collectionName,
-                        entityId: model["_id"]
-                    };
-                    if (!trackOptions.metaOnly) {
-                        trackRecord.model = model;
-                        trackRecord.diff = fast_json_patch_1.compare(result, model);
+            _this.collection.upsert(model, function (result) { return __awaiter(_this, void 0, void 0, function () {
+                var trackRecord, documentPath;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (this.track) {
+                                trackRecord = {
+                                    date: Date.now(),
+                                    model: null,
+                                    diff: null,
+                                    type: isFromInsertOne
+                                        ? serendip_business_model_1.EntityChangeType.Create
+                                        : serendip_business_model_1.EntityChangeType.Update,
+                                    userId: userId,
+                                    collection: this.collectionName,
+                                    entityId: model["_id"]
+                                };
+                                if (!trackOptions.metaOnly) {
+                                    trackRecord.model = model;
+                                    trackRecord.diff = fast_json_patch_1.compare(result, model);
+                                }
+                                this.provider.changes.insertOne(trackRecord);
+                            }
+                            this.provider.events[this.collectionName].emit(isFromInsertOne ? "insert" : "update", result);
+                            documentPath = path.join(this.provider.dbPath, this.collectionName, result._id + '.json');
+                            return [4 /*yield*/, fs.writeJSON(documentPath, result, {
+                                    replacer: null,
+                                    spaces: 2
+                                })];
+                        case 1:
+                            _a.sent();
+                            resolve(result);
+                            return [2 /*return*/];
                     }
-                    _this.provider.changes.insertOne(trackRecord);
-                }
-                _this.provider.events[_this.collectionName].emit(isFromInsertOne ? "insert" : "update", result);
-                resolve(result);
-            }, function (err) { return reject(err); });
+                });
+            }); }, function (err) { return reject(err); });
         });
     };
     MingodbCollection.prototype.deleteOne = function (_id, userId, trackOptions) {
@@ -137,7 +153,7 @@ var MingodbCollection = /** @class */ (function () {
                         else
                             return [2 /*return*/, reject("not found")];
                         this.collection.remove(_id, function () { return __awaiter(_this, void 0, void 0, function () {
-                            var trackRecord;
+                            var trackRecord, documentPath;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
                                     case 0:
@@ -159,6 +175,10 @@ var MingodbCollection = /** @class */ (function () {
                                         _a.label = 2;
                                     case 2:
                                         this.provider.events[this.collectionName].emit("delete", model);
+                                        documentPath = path.join(this.provider.dbPath, this.collectionName, _id + '.json');
+                                        return [4 /*yield*/, fs.unlink(documentPath)];
+                                    case 3:
+                                        _a.sent();
                                         resolve(model);
                                         return [2 /*return*/];
                                 }
